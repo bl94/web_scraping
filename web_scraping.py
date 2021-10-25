@@ -13,14 +13,13 @@ def get_author_names(html_page):
     get author names
     '''
     set_authors=set()
-    authors=html_page.select('.quote')
+    authors=html_page.select('.author')
     for author in authors:
-        author=author.select('small')[0].getText()
-        set_authors.add(author)
+        set_authors.add(author.text)
     return set_authors
     
 print("Authors")
-get_author_names(soup)
+print(get_author_names(soup))
 
 def get_text_quotes(html_page):
     '''
@@ -51,11 +50,22 @@ print("Top ten tags")
 get_top_ten_tags(soup)
 
 def get_unigue_authors():
-    page=0
+    page=1
     unique_authors=set()
+    authors=[]
     while page<=math.inf:
         base_url='http://quotes.toscrape.com/page/{}/'
         result=requests.get(base_url.format(page))
         soup=bs4.BeautifulSoup(result.text,'lxml')
-        unique_authors=get_author_names(soup)
+        authors.extend(get_author_names(soup))
+        if 'No quotes found!' in result.text:
+            break
         page+=1
+    unique_authors=set(authors)
+    sorted(unique_authors)
+    unique_authors=list(unique_authors)
+    unique_authors.sort()
+    print(*unique_authors)       
+
+print("Unique authors")
+get_unigue_authors()
